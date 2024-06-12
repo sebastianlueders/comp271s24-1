@@ -29,9 +29,23 @@ public class BookReview {
         return bookScanner;
     } // method connecttoBook
 
+    public static int countWords(Scanner scanner) {
+        DynamicArray uniqueWords = new DynamicArray();
+        while(scanner.hasNext()) {
+            uniqueWords.addUnique(scanner.next());
+        }
+
+        return uniqueWords.getPosition();
+
+    }
+
     public static void main(String[] args) {
         // https://gutenberg.org/cache/epub/98/pg98.txt is a link
         // to the text of "Tale of Two Cities" from Project Gutenberg
         String book = "https://gutenberg.org/cache/epub/98/pg98.txt";
+        Scanner bookScanner = connectToBook(book);
+        int numberOfUniqueWords = countWords(bookScanner);
+        System.out.printf("Number of Unique Words: %d%n", numberOfUniqueWords);
+
     } // method main
 } // class BookReview

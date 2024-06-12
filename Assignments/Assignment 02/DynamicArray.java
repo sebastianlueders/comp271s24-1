@@ -97,5 +97,10 @@ public class DynamicArray {
         }
         return canBeAdded;
     } // method addUnique
+
+    /*Access position value */
+    public int getPosition() {
+        return this.position;
+    }
     
 } // class DynamicArray
