@@ -99,4 +99,18 @@ public class DynamicArray implements BasicTools {
     } // method addUnique
 
     
+    /**
+     * Extends the Basic Tools interface to allow for easy checking of whether two dynamic arrays share a common value
+     * @param DynamicArray other to cross-check for common value with the DynamicArray this method is called on
+     * @return true if there is some intersection between the two objects, false if not
+     */
+    public boolean intersects(DynamicArray other) {
+        boolean match = false;
+        int counter = 0;
+        while(!match && counter < this.position) {
+            match = other.contains(this.data[counter]);
+            counter++;
+        }
+        return match;
+    }
 } // class DynamicArray
