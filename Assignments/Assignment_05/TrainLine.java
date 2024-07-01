@@ -69,13 +69,7 @@ public class TrainLine {
      * @return true if station found; false otherwise or if object has no stations.
      */
     public boolean contains(String stationName) {
-        boolean found = false;
-        Station current = this.head;
-        while (!found && current != null) {
-            found = current.getName().equals(name);
-            current = current.getNext();
-        }
-        return found;
+        return this.indexOf(stationName) != -1;
     } // method contains
 
     /**
@@ -130,7 +124,7 @@ public class TrainLine {
             Station current = this.head;
             while (current.hasNext()) {
                 sb.append(String.format("[ %s ] --> ", current.getName()));
-                current = current.getNext()
+                current = current.getNext();
             }
             // Treat the last station in the line
             sb.append(String.format("[ %s ]", tail.getName()));
@@ -140,6 +134,19 @@ public class TrainLine {
 
     /** STUB FOR indexOf */
     public int indexOf(String name) {
-        return -1;
+        int indexMatch = -1;
+        int indexPointer = 0;
+        Station current = this.head;
+        while(indexMatch == -1 && current != null) {
+
+            if(current.getName().equals(name)) {
+                indexMatch = indexPointer;
+            }
+
+            indexPointer++;
+            current = current.getNext();
+        }
+        
+        return indexMatch;
     } // method indexOf
 }
