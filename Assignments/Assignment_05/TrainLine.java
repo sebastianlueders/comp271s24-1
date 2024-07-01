@@ -148,5 +148,22 @@ public class TrainLine {
         }
         
         return indexMatch;
-    } // method indexOf
+    } 
+
+    public String getHead() {
+        return this.head;
+    }
+    
+    public void append(TrainLine appendedLine) {
+
+        Station stationToAdd = appendedLine.getHead();
+
+        while(stationToAdd.hasNext()) {
+            this.addStation(stationToAdd);
+            stationToAdd = stationToAdd.getNext();
+        }
+
+        this.addStation(stationToAdd);
+
+    }
 }
