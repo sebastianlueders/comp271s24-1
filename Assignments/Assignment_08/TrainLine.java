@@ -218,4 +218,65 @@ public class TrainLine {
         }
     } // method append
 
+
+    /*
+     * Returns a list of stations in the train line in the order in which the train line is traversed
+     * 
+     * @return full list of stations in the train line this method is called upon
+     */
+    public String listStations() {
+        
+        String fullList; // Initializes a string value to return at the end
+        int stationsAdded = 0; // Initialize a variable to track the number of stations added
+        
+        if (this.numberOfStations == 0) {
+            fullList = "The line is empty."; // If there are no stations in this train line, set the return value to alert the caller that the line is empty
+        } else {
+            StringBuilder stationList = new StringBuilder(); // Instantiates a new StringBuilder object to record/append the trainlines as we iterate through the trainline with an auto (initial) capacity of 16
+            Station currentStation = this.head; // Sets the first station to iterate through to be the head station
+            while(stationsAdded < this.numberOfStations) { 
+                stationList.append(currentStation.getName() + "/n"); // Appends the currentStation's name to the StringBuilder object followed by a newline character
+                currentStation = currentStation.getNext(); // Sets the currentStation to the next station in the train line
+                stationsAdded++; // Increments the number of stations added to ensure that the loop only runs once for each station in the train line
+            }
+
+            fullList = stationList.toString(); // converts the StringBuilder object to a string
+        }
+
+        return fullList;
+    }
+
+
+    /*
+     * Returns a boolean value expressing whether the specified train line shares any stations with the station the method is called upon
+     */
+    public boolean intersects(TrainLine other) {
+        
+        boolean intersection = false; // Initializes and declares a return value pre-set to false (in case at least one of the train lines has zero stations)
+
+
+        if (this.numberOfStations * other.getNumberOfStations() != 0) {   
+
+            Station stationIteratorA = this.head; // Declares and initializes an iterator for the train line that this method is called on to iterate through stations to cross reference with other train line
+
+            while(!intersection && stationIteratorA != null) {
+                intersection = other.contains(stationIteratorA.getName()); // Sets intersection value to true/false based on if there is a matching station
+
+                stationIteratorA.getNext(); // Sets the station iterator to the next station to continue checking for a shared station
+            }
+
+        }
+
+        return intersection;
+
+    }
+
+    /*
+     * Compares the length of the invoking Train Line to the Train Line passed as the parameter & returns the amount of stations that would need to be added to the parameterized train
+     * line to make the two have the same number of stations
+     */
+    public int compareTo(TrainLine other) {
+        return this.numberOfStations - other.getNumberOfStations(); // returns the difference in stations between the two
+    }
+
 } // class TrainLine
