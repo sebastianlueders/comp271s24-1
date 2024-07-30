@@ -3,12 +3,19 @@ public class Hash271 {
     /** Default size for foundation array */
     private static final int DEFAULT_SIZE = 4;
 
+    /** Added a default loadFactor threshhold constant value */
+    private static final double LOAD_THRESHOLD = 0.75;
+
     /** Foundation array of node objects */
     Node[] foundation;
+
+    /** Added a loadFactor field to track ratio of nodes to the array's length  */
+    private double loadFactor;
 
     /** Basic constructor */
     public Hash271(int size) {
         this.foundation = new Node[size];
+        loadFactor = 0; // Initializes the value of loadFactor to zero (since nodes haven't been added yet)
     } // basic constructor
 
     /** Default constructor */
@@ -38,6 +45,9 @@ public class Hash271 {
         if (node != null) {
             // Use the node's hashcode to determine is position in
             // the underlying array
+            while (resizeNeeded()) {
+                rehash();
+            }
             int destination = computeArrayPosition(node.hashCode());
             // If the position in the array is occupied by another node,
             // place that node under the new node we wish to insert
@@ -48,6 +58,16 @@ public class Hash271 {
             this.foundation[destination] = node;
         }
     } // method put
+
+    /**
+     * Checks to see if adding a node would put the loadFactor over the default threshold
+     * 
+     * @return truth value of whether threshold would be surpassed
+     */
+    private boolean resizeNeeded() {
+        return loadFactor + (double) 1/foundation.length >= LOAD_THRESHOLD; //Returns true if adding a node would result in a loadFactor greater than 0.75 (default)
+    }
+
 
     /**
      * Wrapper for put(Node). Accepts a string, creates a Node object and passes it
@@ -77,6 +97,35 @@ public class Hash271 {
         }
         return sb.toString();
     } // method toString
+
+    /*
+     * 
+     */
+    private void rehash() {
+        Node[] allNodes = new Node[Math.ceil((int) 0.75 * foundation.length)]; // Creates a new array with enough space for every Node in the original hash
+        int iterator = 0;
+        int indexTracker = 0;
+
+        while (iterator < foundation.length) {
+            if (foundation[iterator] != 0) {
+                Node nodeToAdd = foundation[iterator];
+                allNodes[indexTracker++] = nodeToAdd;
+                while (nodeToAdd.hasNext()) {
+                    nodeToAdd = nodeToAdd.getNext();
+                    allNodes[indexTracker++] = nodeToAdd;
+                }
+
+            }
+            iterator++;
+        }
+
+        iterator = 0;
+        foundation = new Node[foundation.length * 2];
+
+        while (iterator < allNodes.length) {
+            this.put(allNodes[iterator++]);
+        }
+    }
 
     /** Driver code */
     public static void main(String[] args) {
