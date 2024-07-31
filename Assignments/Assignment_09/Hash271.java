@@ -12,10 +12,14 @@ public class Hash271 {
     /** Added a loadFactor field to track ratio of nodes to the array's length  */
     private double loadFactor;
 
+    /* Added a nodeCount field to track the number of nodes in the hash & for easy loadFactor calculation */
+    private int nodeCount;
+
     /** Basic constructor */
     public Hash271(int size) {
         this.foundation = new Node[size];
-        loadFactor = 0; // Initializes the value of loadFactor to zero (since nodes haven't been added yet)
+        nodeCount = 0; // Initializes the number of nodes in the hash to zero
+        loadFactor = 0.0; // Initializes the value of loadFactor to zero (since nodes haven't been added yet)
     } // basic constructor
 
     /** Default constructor */
@@ -43,19 +47,20 @@ public class Hash271 {
     public void put(Node node) {
         // Operate only is node is not null
         if (node != null) {
-            // Use the node's hashcode to determine is position in
-            // the underlying array
-            while (resizeNeeded()) {
+            
+            if (resizeNeeded()) { // resize hash if necessary
                 rehash();
             }
-            int destination = computeArrayPosition(node.hashCode());
+            int destination = computeArrayPosition(node.hashCode()); // use node's hashcode to determine its position in the underlying array
             // If the position in the array is occupied by another node,
             // place that node under the new node we wish to insert
             if (this.foundation[destination] != null) {
                 node.setNext(this.foundation[destination]);
+                
             }
-            // Put the new node to the array position
-            this.foundation[destination] = node;
+            this.foundation[destination] = node; // Put the new node to the array position
+            nodeCount++;
+            updateLoadFactor(); // adjusts loadFactor value for each addition
         }
     } // method put
 
@@ -65,7 +70,12 @@ public class Hash271 {
      * @return truth value of whether threshold would be surpassed
      */
     private boolean resizeNeeded() {
-        return loadFactor + (double) 1/foundation.length >= LOAD_THRESHOLD; //Returns true if adding a node would result in a loadFactor greater than 0.75 (default)
+        return loadFactor >= LOAD_THRESHOLD; //Returns true if loadFactor is greater than 0.75 (default)
+    }
+
+    /* Updates load factor with current load factor ratio */
+    private void updateLoadFactor() {
+        loadFactor = (double) nodeCount / this.foundation.length; // Updates loadFactor with the ratio of current nodes to the length of the foundation array
     }
 
 
@@ -99,32 +109,27 @@ public class Hash271 {
     } // method toString
 
     /*
-     * 
+     * Rehashes with an array double the initial size
      */
     private void rehash() {
-        Node[] allNodes = new Node[Math.ceil((int) 0.75 * foundation.length)]; // Creates a new array with enough space for every Node in the original hash
-        int iterator = 0;
-        int indexTracker = 0;
+        Node[] oldFoundation = this.foundation; // Copies original foundation array to a new variable name
+        this.foundation = new Node[oldFoundation.length * 2]; // Initialize a variable to track the progression through each array in foundation
+        int iterator = 0; // Initializes a variable to iterate through the oldFoundation indexes
+        loadFactor = 0.0; // Resets the loadFactor to zero
+        nodeCount = 0; // Resets nodeCount to zero
 
-        while (iterator < foundation.length) {
-            if (foundation[iterator] != 0) {
-                Node nodeToAdd = foundation[iterator];
-                allNodes[indexTracker++] = nodeToAdd;
-                while (nodeToAdd.hasNext()) {
-                    nodeToAdd = nodeToAdd.getNext();
-                    allNodes[indexTracker++] = nodeToAdd;
-                }
-
+        while (iterator < oldFoundation.length) {
+            Node nodeToAdd = oldFoundation[iterator]; // Sets nodeToAdd variable equal to the node value (or null value) of the iterator specified index
+            while ( nodeToAdd != null) {
+                Node next = nodeToAdd.getNext(); // Declares a next (node) variable equal to the next node in the LL (could be null)
+                this.put(nodeToAdd); // Adds node to new foundation array
+                nodeToAdd.setNext(null); // Sets the next value of the node just added to null (to avoid confusion with next values)
+                nodeToAdd = next; // Assigns the node to add value equal to the next node in the LL (null if nonexistant)
             }
-            iterator++;
+            iterator++; // Move to next index in oldFoundation array
         }
 
-        iterator = 0;
-        foundation = new Node[foundation.length * 2];
 
-        while (iterator < allNodes.length) {
-            this.put(allNodes[iterator++]);
-        }
     }
 
     /** Driver code */
